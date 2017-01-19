@@ -163,7 +163,8 @@ RCT_EXPORT_METHOD(prepareRecordingAtPath:(NSString *)path sampleRate:(float)samp
   NSError *error = nil;
 
   _recordSession = [AVAudioSession sharedInstance];
-  [_recordSession setCategory:AVAudioSessionCategoryRecord error:nil];
+  [_recordSession setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+  [_recordSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
 
   _audioRecorder = [[AVAudioRecorder alloc]
                 initWithURL:_audioFileURL
@@ -185,7 +186,14 @@ RCT_EXPORT_METHOD(startRecording)
 {
   if (!_audioRecorder.recording) {
     [self startProgressTimer];
-    [_recordSession setActive:YES error:nil];
+//    [_recordSession setActive:YES error:nil];
+      NSError * err;
+     
+      NSLog(@"FKJELWJFLKEJKLFE");
+      NSLog(@"%@", err);
+      
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"kRecordingWillBegin" object:nil];
+      
     [_audioRecorder record];
 
   }
@@ -194,7 +202,17 @@ RCT_EXPORT_METHOD(startRecording)
 RCT_EXPORT_METHOD(stopRecording)
 {
   [_audioRecorder stop];
-  [_recordSession setActive:NO error:nil];
+
+    // This might set the whole app to not active
+//  [_recordSession setActive:NO error:nil];
+    
+    
+    NSLog(@"FKJELWJFLKEJKLFE");
+    NSError * err;
+    
+    NSLog(@"%@", err);
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"kRecordingDidFinish" object:nil];
+
   _prevProgressUpdateTime = nil;
 }
 
